@@ -206,6 +206,12 @@ export function generateResumeHTML(resume: ResumeData): string {
           <span class="project-name">${proj.name}</span>
           ${proj.technologies.length > 0 ? `<span class="project-tech"> · ${proj.technologies.join(', ')}</span>` : ''}
         </div>
+        ${(proj.github || proj.url) ? `
+        <div style="font-size: 8.5pt; display: flex; gap: 8px;">
+          ${proj.github ? `<a href="${proj.github.startsWith('http') ? proj.github : `https://${proj.github}`}" target="_blank" style="color: ${colors.primary}; text-decoration: none; font-weight: 500;">GitHub</a>` : ''}
+          ${proj.github && proj.url ? `<span style="color: ${colors.muted};">|</span>` : ''}
+          ${proj.url ? `<a href="${proj.url.startsWith('http') ? proj.url : `https://${proj.url}`}" target="_blank" style="color: ${colors.primary}; text-decoration: none; font-weight: 500;">Demo</a>` : ''}
+        </div>` : ''}
       </div>
       ${proj.bullets.filter(b => b.text).length > 0 ? `
       <ul class="bullets">

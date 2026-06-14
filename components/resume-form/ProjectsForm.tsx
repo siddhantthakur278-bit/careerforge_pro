@@ -145,6 +145,29 @@ export default function ProjectsForm() {
                 />
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Project URL (Demo)</label>
+                  <input
+                    type="url"
+                    value={proj.url || ''}
+                    onChange={(e) => updateProject(proj.id, { url: e.target.value })}
+                    placeholder="https://example.com"
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">GitHub Repository</label>
+                  <input
+                    type="url"
+                    value={proj.github || ''}
+                    onChange={(e) => updateProject(proj.id, { github: e.target.value })}
+                    placeholder="https://github.com/username/project"
+                    className={inputClass}
+                  />
+                </div>
+              </div>
+
               {/* Bullet points */}
               <div className="space-y-2">
                 <label className="text-xs text-gray-400">Bullet Points</label>

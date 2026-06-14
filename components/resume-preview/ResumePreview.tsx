@@ -178,12 +178,39 @@ export default function ResumePreview({ resume }: ResumePreviewProps) {
           <Section title="Projects" theme={theme}>
             {projects.map((proj) => (
               <div key={proj.id} style={{ marginBottom: '10px' }}>
-                <div>
-                  <span style={{ fontWeight: 600, fontSize: '10pt', color: theme.primary }}>{proj.name}</span>
-                  {proj.technologies.length > 0 && (
-                    <span style={{ fontSize: '8.5pt', color: theme.accent, marginLeft: '8px' }}>
-                      {proj.technologies.join(', ')}
-                    </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <div>
+                    <span style={{ fontWeight: 600, fontSize: '10pt', color: theme.primary }}>{proj.name}</span>
+                    {proj.technologies.length > 0 && (
+                      <span style={{ fontSize: '8.5pt', color: theme.accent, marginLeft: '8px' }}>
+                        {proj.technologies.join(', ')}
+                      </span>
+                    )}
+                  </div>
+                  {(proj.github || proj.url) && (
+                    <div style={{ fontSize: '8.5pt', display: 'flex', gap: '8px' }}>
+                      {proj.github && (
+                        <a
+                          href={proj.github.startsWith('http') ? proj.github : `https://${proj.github}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: theme.primary, textDecoration: 'none', fontWeight: 500 }}
+                        >
+                          GitHub
+                        </a>
+                      )}
+                      {proj.github && proj.url && <span style={{ color: theme.muted }}>|</span>}
+                      {proj.url && (
+                        <a
+                          href={proj.url.startsWith('http') ? proj.url : `https://${proj.url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: theme.primary, textDecoration: 'none', fontWeight: 500 }}
+                        >
+                          Demo
+                        </a>
+                      )}
+                    </div>
                   )}
                 </div>
                 {proj.bullets.filter(b => b.text).length > 0 && (
