@@ -16,7 +16,7 @@ import {
   User, Briefcase, GraduationCap, Wrench, FileText,
   Download, Loader2, Target, ChevronRight,
   Zap, LayoutTemplate, Brain, AlertCircle, FolderCode, Award,
-  Upload,
+  Upload, Minus, Plus,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { MOCK_RESUME_FRONTEND, MOCK_RESUME_PRODUCT_MANAGER, MOCK_RESUME_UX_DESIGNER } from '@/data/mock-resumes';
@@ -42,6 +42,7 @@ export default function BuilderPage() {
   const [activeSection, setActiveSection] = useState('contact');
   const [showJDPanel, setShowJDPanel] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [zoom, setZoom] = useState<number>(0.85);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isLoadedRef = useRef(false);
 
@@ -505,10 +506,57 @@ export default function BuilderPage() {
         )}
 
         {/* Right: Resume Preview */}
-        <div className="flex-1 bg-[#080d1a] flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-auto scrollbar-thin p-6">
-            <div className="flex justify-center">
-              <div className="shadow-2xl" style={{ width: '210mm' }}>
+        <div className="flex-1 bg-[#080d1a] flex flex-col overflow-hidden relative">
+          {/* Zoom controls floating bar */}
+          <div className="absolute top-4 right-4 z-30 flex items-center gap-1.5 p-1.5 glass rounded-xl border border-white/10 shadow-lg">
+            <button
+              onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
+              className="p-1 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
+              title="Zoom Out"
+            >
+              <Minus className="w-4 h-4" />
+            </button>
+            <span className="text-[11px] font-semibold text-gray-300 w-10 text-center select-none">
+              {Math.round(zoom * 100)}%
+            </span>
+            <button
+              onClick={() => setZoom(Math.min(1.5, zoom + 0.1))}
+              className="p-1 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors"
+              title="Zoom In"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+            <div className="w-px h-3 bg-white/10 mx-0.5" />
+            <button
+              onClick={() => setZoom(0.85)}
+              className="px-2 py-1 hover:bg-white/10 rounded-lg text-[10px] font-medium text-gray-400 hover:text-white transition-colors"
+              title="Reset Zoom"
+            >
+              Reset
+            </button>
+            <button
+              onClick={() => setZoom(1.0)}
+              className="px-2 py-1 hover:bg-white/10 rounded-lg text-[10px] font-medium text-gray-400 hover:text-white transition-colors"
+              title="Fit Page Width"
+            >
+              100%
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-auto scrollbar-thin p-6 flex justify-center items-start">
+            <div
+              style={{
+                width: `calc(210mm * ${zoom})`,
+                transition: 'width 0.2s ease',
+              }}
+            >
+              <div
+                className="shadow-2xl origin-top-left transition-transform duration-200"
+                style={{
+                  transform: `scale(${zoom})`,
+                  width: '210mm',
+                }}
+              >
                 <ResumePreview resume={resume} />
               </div>
             </div>

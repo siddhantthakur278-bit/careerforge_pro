@@ -177,7 +177,7 @@ export default function ProjectsForm() {
                     <span>Tone:</span>
                     <select
                       value={rewriteTone}
-                      onChange={(e) => setRewriteTone(e.target.value as any)}
+                      onChange={(e) => setRewriteTone(e.target.value as 'professional' | 'metric-driven' | 'executive' | 'creative')}
                       className="bg-white/5 border border-white/10 text-gray-300 rounded-lg px-2 py-0.5 text-[11px] focus:outline-none focus:border-indigo-500/60 outline-none cursor-pointer hover:bg-white/10 transition-colors"
                     >
                       <option value="professional" className="bg-[#0a0f1e] text-white">Professional</option>
