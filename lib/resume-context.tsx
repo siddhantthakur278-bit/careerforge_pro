@@ -425,7 +425,7 @@ interface ResumeContextValue {
   dispatch: React.Dispatch<Action>;
   // Convenience helpers
   analyzeJD: () => Promise<void>;
-  rewriteBullet: (experienceId: string, bulletId: string, currentText: string) => Promise<void>;
+  rewriteBullet: (experienceId: string, bulletId: string, currentText: string, tone?: string) => Promise<void>;
   downloadPDF: () => Promise<void>;
 }
 
@@ -466,14 +466,14 @@ export function ResumeProvider({ children }: { children: React.ReactNode }) {
   }, [state.jobDescription, state.resume]);
 
   const rewriteBullet = useCallback(
-    async (experienceId: string, bulletId: string, currentText: string) => {
+    async (experienceId: string, bulletId: string, currentText: string, tone = 'professional') => {
       dispatch({ type: 'SET_IS_REWRITING', payload: true });
       try {
         const keywords = state.jdAnalysis?.mustHave || state.jdAnalysis?.rawKeywords || [];
         const res = await fetch('/api/ai-rewrite', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: currentText, keywords, type: 'bullet' }),
+          body: JSON.stringify({ text: currentText, keywords, type: 'bullet', tone }),
         });
         const data = await res.json();
         dispatch({

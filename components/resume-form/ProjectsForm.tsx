@@ -14,6 +14,7 @@ export default function ProjectsForm() {
   const { projects } = state.resume;
   const [expandedId, setExpandedId] = useState<string | null>(projects[0]?.id || null);
   const [rewritingBullet, setRewritingBullet] = useState<string | null>(null);
+  const [rewriteTone, setRewriteTone] = useState<'professional' | 'metric-driven' | 'executive' | 'creative'>('professional');
 
   const updateProject = (id: string, data: Partial<Project>) => {
     dispatch({ type: 'UPDATE_PROJECT', payload: { id, data } });
@@ -50,7 +51,7 @@ export default function ProjectsForm() {
       const res = await fetch('/api/ai-rewrite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, keywords, type: 'bullet' }),
+        body: JSON.stringify({ text, keywords, type: 'bullet', tone: rewriteTone }),
       });
       const data = await res.json();
       if (data.rewritten) {
@@ -170,7 +171,22 @@ export default function ProjectsForm() {
 
               {/* Bullet points */}
               <div className="space-y-2">
-                <label className="text-xs text-gray-400">Bullet Points</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs text-gray-400">Bullet Points</label>
+                  <div className="flex items-center gap-1 text-[11px] text-gray-400">
+                    <span>Tone:</span>
+                    <select
+                      value={rewriteTone}
+                      onChange={(e) => setRewriteTone(e.target.value as any)}
+                      className="bg-white/5 border border-white/10 text-gray-300 rounded-lg px-2 py-0.5 text-[11px] focus:outline-none focus:border-indigo-500/60 outline-none cursor-pointer hover:bg-white/10 transition-colors"
+                    >
+                      <option value="professional" className="bg-[#0a0f1e] text-white">Professional</option>
+                      <option value="metric-driven" className="bg-[#0a0f1e] text-white">Metric-Driven</option>
+                      <option value="executive" className="bg-[#0a0f1e] text-white">Executive</option>
+                      <option value="creative" className="bg-[#0a0f1e] text-white">Creative</option>
+                    </select>
+                  </div>
+                </div>
                 {proj.bullets.map((bullet, bIdx) => (
                   <div key={bullet.id} className="flex items-start gap-2">
                     <div className="flex-1 relative">

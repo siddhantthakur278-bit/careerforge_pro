@@ -8,16 +8,24 @@ import { handleGeminiError } from '@/lib/gemini-error';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 type RewriteType = 'bullet' | 'summary' | 'authority';
+type RewriteTone = 'professional' | 'metric-driven' | 'executive' | 'creative';
 
-const PROMPTS: Record<RewriteType, (text: string, keywords: string[]) => string> = {
-  bullet: (text, keywords) => `You are an expert resume writer specializing in ATS optimization.
+const TONE_INSTRUCTIONS: Record<RewriteTone, string> = {
+  professional: 'Maintain a standard, clear, and professional tone suitable for corporate environments.',
+  'metric-driven': 'Focus heavily on quantifiable achievements, statistics, percentages, and metrics. Invent realistic, placeholder metrics if none are present in the original (e.g., "improving conversion rate by 15%", "saving 12 hours weekly").',
+  executive: 'Sound authoritative, high-level, and leadership-focused. Use visionary action verbs like Spearheaded, Orchestrated, Championed, and Directed.',
+  creative: 'Write with dynamic, engaging language, focusing on innovation, problem-solving, and unique value addition.',
+};
+
+const PROMPTS: Record<RewriteType, (text: string, keywords: string[], tone?: RewriteTone) => string> = {
+  bullet: (text, keywords, tone = 'professional') => `You are an expert resume writer specializing in ATS optimization.
 
 Rewrite the following resume bullet point to:
-1. Start with a powerful action verb (Led, Engineered, Designed, Implemented, Optimized, etc.)
+1. Start with a powerful action verb.
 2. Naturally incorporate these keywords where relevant: ${keywords.slice(0, 8).join(', ')}
-3. Be specific and quantifiable (add realistic metrics if none exist, e.g., "reducing load time by 40%")
-4. Be concise (1-2 lines max)
-5. Sound authoritative and impactful
+3. Be specific and quantifiable.
+4. Be concise (1-2 lines max).
+5. Tone style: ${TONE_INSTRUCTIONS[tone] || TONE_INSTRUCTIONS.professional}
 
 Original bullet: "${text}"
 
@@ -53,10 +61,11 @@ No explanation, no markdown, just JSON.`,
 
 export async function POST(req: NextRequest) {
   try {
-    const { text, keywords = [], type = 'bullet' } = await req.json() as {
+    const { text, keywords = [], type = 'bullet', tone = 'professional' } = await req.json() as {
       text: string;
       keywords: string[];
       type: RewriteType;
+      tone: RewriteTone;
     };
 
     if (!text || text.trim().length < 5) {
@@ -65,7 +74,7 @@ export async function POST(req: NextRequest) {
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const promptFn = PROMPTS[type] || PROMPTS.bullet;
-    const prompt = promptFn(text, keywords);
+    const prompt = promptFn(text, keywords, tone);
 
     const result = await model.generateContent(prompt);
     const rawText = result.response.text().trim();
